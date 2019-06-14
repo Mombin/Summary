@@ -6,8 +6,8 @@
   - 가변저항으로 LCD 터치패널 제어
   - DMA사용하여 신호 처리
 
->시리얼 통신 개요도
-![시리얼통신](.\picture\serial_comm.png)
+>시리얼 통신 개요도  
+![시리얼통신](./picture/serial_comm.png)
 
 * Uart는 통신 속도가 느리다
 
@@ -94,7 +94,7 @@ rINTPND1 = (1<<1); // 2nd(0b0000010 -> 0b0000000)
 <h1> DMA(Direce Memory Access) </h1>
 
  ### DMA의 데이터 복사
- DMA-> DMA.C(Controller)
+ DMA-> DMA.C(Controller)  
  ![](.\picture\DMA_System2.jpg)
 
  ### DMA작동 방법
@@ -115,7 +115,7 @@ DMA특성
 - RAM에서의 쓰기는 전송단위가 빠른것이 유리함
 - DMA는 속도가 중요한 곳(멀티미디어, 통신, 스토리지)에서 필요하다.
 
-> [Compare with Demmand and Handshake Mode]
+> [Compare with Demmand and Handshake Mode]  
 > ![](.\picture\Demand_Handshake.png)
 
 - Demand mode
@@ -132,7 +132,7 @@ DMA특성
 
 # ADC(AD Converter)
 
->ADC컨버터 개요(Sampling)
+>ADC컨버터 개요(Sampling)  
 >![](./picture/ADC1.png)
 
 - Smapling: 아날로그 데이터를 주파수에 따라 모두 수치화(Digital화)하는 방법  
