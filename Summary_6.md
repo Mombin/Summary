@@ -181,3 +181,8 @@ Cache 쓰는 이유 속도를 빠르게 하기 위해
   속도가 저하된다.
 - data cache가 victim(새로운값에 의해 덮어씌어질 때)됐을 때
   memory의 값이 update된다.
+
+cache flush - cache clean
+cache를 운용하는 이유: 속도가 향상된다.
+
+123123
