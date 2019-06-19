@@ -184,5 +184,3 @@ Cache 쓰는 이유 속도를 빠르게 하기 위해
 
 cache flush - cache clean
 cache를 운용하는 이유: 속도가 향상된다.
-
-123123
