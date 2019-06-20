@@ -184,3 +184,66 @@ Cache 쓰는 이유 속도를 빠르게 하기 위해
 
 cache flush - cache clean
 cache를 운용하는 이유: 속도가 향상된다.
+
+
+```
+	.globl MMU_EnableICache
+MMU_EnableICache:
+	/* IMPLEMENT HERE */      
+	mrc  p15,0,r0,c1,c0,0 @READ
+    @c1값이 r0로 복사
+	orr  r0,r0,#R1_I
+	mcr  p15,0,r0,c1,c0,0 @WRITE
+	mov	 pc,lr
+```
+
+```
+          ---
+mrc p15,0,r0,c1,c0,0 @READ
+    ------   -------
+
+mcr p15,0,r0,c1,c0,0 @READ
+
+@r0, c1이 핵심
+mrc c1->r0 복사
+mcr r0->c1 복사
+
+```
+
+<h2> MMU(Memory Management Units) </h3>
+<h3><b>주요기능</b></h3>
+### 어드레스 변환(tranlation address)
+CPU는 30000000번지가 가상주소인지 물리주소인지 모른다
+CPU가 던진 30000000번지는 MMU로 전달된다. 그리고 가상주소를 물리주소로 변환된다.
+
+### 메모리 보호(protect memory)
+메모리에 접근하는 것들을 막는 역할을 한다
+
+### OS가 탑재된 곳에 가치가 있음
+
+```
+MMU_SetMTT(0x00000000,0x07f00000,0x00000000,RW_NCNB); //bank0, 128mb mapping
+
+몇 번지가 왔을때, 몇 번지로 바꾸어라 라는 테이블을 MMU가 참조한다.
+
+```
+
+### ARM주소 개념(address concept)
+
+## 레지스터들은 무조건 RW_NCNB로 한다.
+
+
+## Cache Memory
+
+1. I-Cache / D-Cache 활성화 방법
+2. Memory Mapped I/O D-Cache 비활성화
+3. Cache Clean 과 Cache Flush(Invalidate)
+
+DMA사용 시에는 D-Cache를 반드시 off한다.
+
+## MMU
+1. 링커(Linker) 스크립트 파일에서의 주소 표현
+2. 예외처리(Exception) 벡터 테이블
+3. 보호된 메모리 접근 -> Data Abort
+4. 존재하지 않는 가상 메모리 접근 -> Data Abort
+
