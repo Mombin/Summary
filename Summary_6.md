@@ -282,7 +282,6 @@ tool chain의 버전이 높다고 좋은게 아니라 사용하는 프로그램�
 
 
 ```c
-HANDLER HandlerDabort, HandleDabort
 	/* macro 정의 */
 	.macro HANDLER, HandlerLabel, HandleLabel @HANDLER macro : 이름, HandlerLabel, HandeleLabel : 전달인자
 \HandlerLabel: @->HandlerDabort:
@@ -295,6 +294,9 @@ HANDLER HandlerDabort, HandleDabort
 	str		r0,[sp,#4]      	/* store the contents(ISR) of HandleXXX to stack */
 	ldmfd	sp!,{r0,pc}     	/* POP the work register and pc(jump to ISR) */
 	.endm
+
+/* macre 사용 */
+HANDLER HandlerDabort, HandleDabort
 ```
 
 ## FIQ가 IRQ보다 빠르게 처리되는 이유
@@ -305,3 +307,12 @@ HANDLER HandlerDabort, HandleDabort
 3. Private한 레지스터(컨텍스트 저장/복원이 필요없는)가 5개 존재(r8-r12)
    - Push/Pop을 할 필요가 없다.
    - stmfd sp!, {r8-r9}같은 명령어를 사용할 필요가 없다.
+
+![](./picture/ram_rom.png)
+부트코드 실행시 ram_rom구조일 때에는 rom의 초기화 data를 ram 초기화된 데이터로 복사한다.
+
+- if (&RODATA_END)==(&DATA_START), RAM구조 기반이라 초기화 data복사 X
+- if (&RODATA_END)!=(&DATA_START), RAM-ROM 구조이기 때문에 rom의 초기화data를
+  ram의 초기화 데이터로 복사한다.
+
+bash 튜토리얼 --> https://d.pr/f/ZmZb0n+
