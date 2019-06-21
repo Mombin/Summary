@@ -63,8 +63,7 @@
 - tr 'a-z' 'sdlfknsdlfknsdf' <<< "hello world"
 - /sbin/ifconfig eth0 | grep 'inet addr' | cut -d: -f2 | awk '{print $1}' // ip주소 출력
 - rm -rf !(파일명) : 원하는 파일 제외하고 지우기
-- 정규표현식(Regular expression)
-  - 
+- 정규표현식(Regular expression) 
 
 ```
 #!/usr/bin/env bash
@@ -93,4 +92,26 @@ fi
 }
 ```
 
+## if문 사용법
+```
+#!/bin/bash
 
+# 도전 QUIZ Regular Expression
+# 다음의 출력 결과가 나올 수 있도록 주어진 빈칸(☺︎)을 채우세요
+# 정규식(Regular Expression) 비교를 이용하세요
+
+num=$1
+re='︎[0-9]'
+if ! [[ $num =~ $re ]] ; then # if문 평가
+   echo "error: Not a number" >&2; exit 1
+else
+    echo "is a number"
+fi
+
+# 실행결과
+# user@ubuntu:~$  ./A05.sh 12
+# is a number
+# user@ubuntu:~$  ./A05.sh 1A
+# error: Not a number
+# user@ubuntu:~$
+```
