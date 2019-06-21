@@ -64,6 +64,9 @@
 - /sbin/ifconfig eth0 | grep 'inet addr' | cut -d: -f2 | awk '{print $1}' // ip주소 출력
 - rm -rf !(파일명) : 원하는 파일 제외하고 지우기
 - 정규표현식(Regular expression) 
+- export : 특정 변수의 값을 상속시켜서 다른 프로세스에서도 사용할 수 있게 함.
+- xargs : 쉘 고수 되려면 공부해야함
+
 
 ```
 #!/usr/bin/env bash
