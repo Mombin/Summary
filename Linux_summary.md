@@ -25,4 +25,21 @@
   - subl ~/.bashrc : script file
   - terminal을 새로 열 때 부터 적용됨
   - 바로 적용시키려면 source ~/.bashrc
-- 
+- read : 변수 입력
+  - read -p "Enter your name: " name<br>
+  - Enter tour name: KIM HAN BIN<br>
+  - echo $name
+- COLORS=purple; echo $COLORS : 변수 저장
+  - 띄어쓰기 주의할 것!!!! !!!!
+  - 
+
+- 함수 사용법
+```
+function subl(){ // function은 안써도 됨
+if [["$#" -ne 1]]; then
+    open -a "Sublime Text"
+    return 0
+fi
+}
+```
+
