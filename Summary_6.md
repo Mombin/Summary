@@ -247,3 +247,61 @@ DMA사용 시에는 D-Cache를 반드시 off한다.
 3. 보호된 메모리 접근 -> Data Abort
 4. 존재하지 않는 가상 메모리 접근 -> Data Abort
 
+가상주소를 필요로 하는 S/W에서는 가상 주소로 접근한다.
+
+왜 30000000번지 인가? CS(Chip Select or CE/Chip Enable)가 시작되는 주소이기 때문.
+
+tool chain의 버전이 높다고 좋은게 아니라 사용하는 프로그램과 비슷한 버전의 크로스 컴파일러를 받아야 한다.
+
+
+
+## Reset Exception
+
+1. POR(Power Only Set, after power on)
+2. H/W reset(input Reset switch)
+3. WDT reset
+4. (S/W reset, 소프트웨어마다 다름)
+5. (PC=30000000, 암묵적 리셋)
+
+- Undefined Instruction : 부정적인 Exception
+- S/W Interrupt : 소프트웨어 명령어를 이용해 인터럽트를 실행(H/W 인터럽트와는 다름)
+  swi 0x??? <-service code (각 숫자에 따른 명령어가 존재)<br>
+  접근 할 수 없는 메모리에 swi를 이용해 특권모드로 변경하여 접근한다.
+  
+
+## Prefetch & Data Abort
+
+1. (비정렬 엑세스, Data Abort only!)
+2. 보호된 메모리 엑세스
+3. 존재하지 않는 가상 메모리 엑세스
+   
+7|7|7
+:-:|:-:|:-:
+↓|↓|↓
+37Reg|7Mem|7Excep
+
+
+```c
+HANDLER HandlerDabort, HandleDabort
+	/* macro 정의 */
+	.macro HANDLER, HandlerLabel, HandleLabel @HANDLER macro : 이름, HandlerLabel, HandeleLabel : 전달인자
+\HandlerLabel: @->HandlerDabort:
+	sub		sp,sp,#4		/* decrement sp(to store jump address) */
+	stmfd	sp!,{r0}			/* PUSH the work register to stack(lr doesn`t push because */ 
+						   	/* it return to original address) */
+                               /* r0 = &HandlerAbort
+	ldr		r0,=\HandleLabel @->HandleDabort	/* load the address of HandleXXX to r0 */
+	ldr		r0,[r0]         		/* load the contents(service routine start address) of HandleXXX */
+	str		r0,[sp,#4]      	/* store the contents(ISR) of HandleXXX to stack */
+	ldmfd	sp!,{r0,pc}     	/* POP the work register and pc(jump to ISR) */
+	.endm
+```
+
+## FIQ가 IRQ보다 빠르게 처리되는 이유
+
+1. 파이프라인이 파괴가 되는 것을 방지할 수 있다.
+   FIQ핸들러(vector table) 다음에 코드가 작성될 경우
+2. 우선순위(2)가 IRQ보다 높다.
+3. Private한 레지스터(컨텍스트 저장/복원이 필요없는)가 5개 존재(r8-r12)
+   - Push/Pop을 할 필요가 없다.
+   - stmfd sp!, {r8-r9}같은 명령어를 사용할 필요가 없다.
