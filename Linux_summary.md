@@ -31,9 +31,59 @@
   - echo $name
 - COLORS=purple; echo $COLORS : 변수 저장
   - 띄어쓰기 주의할 것!!!! !!!!
+  - COLORS=purple // COLORS에 purple 값을 넣어줌
+  - COLORS= purple // 변수를 만들었는데 초기화를
+    안했다고 인식(공백때문)
+- which 파일명 : 위치 표시
+- 변수를 사용(호출)할 때에는 $표시를 붙인다.
+- no=0; while [ $no -lt 10 ]; do ((no=no+1)); printf "%02d\n" $no;done
+- for name in *; do echo $name; done
+- for name in *; //파일명 전체를 적는것과 같음
+- for name in *; do echo $name; //파일목록이 화면에 나옴
+- for name in *; do mv $name ${name}_01; done //파일명에 _01추가
+- for name in *; do mv $name ${name%%\.mp3}.wav; done<br>  파일 전체를 wav로 변경
+- 파일명의 글자를 인식해서 변경할수 있음 movie_2018->movie_2019
+- ! : !359를 입력하면 history 목록 중 359명령어를 다시 실행함
+- !! : 가장 최근의 명령어 수행
+- pwd : 현재 디렉토리 보여줌
+- ` : PATH=`pwd` -> pwd내용을 PATH에 넣음
+- PATH1=$(pwd) : 위와 같은 기능
+- $RANDOM : 랜덤 함수 생성, echo $RANDOM
+- PATH=$PATH:/home/user/Desktop : 경로 설정 //맨 뒤 
+  .bashrc파일에 넣어주어야 설정됨. 
+- PATH=/home/user/Desktop:$PATH // 맨앞
+- 우선순위는 PATH의 선언 순서에 따라 결정됨.
+- 변수 입력
+  - GAME="star craft"
+  - echo $GAME //좋은 습관
+  - echo ${GAME}s //->star crafts, 더 좋은 습관
+  - echo $"{GAME}s" // 더더욱 좋은 습관
+- echo "This   is    for testing" | tr -s [:space:] ' '
+- -->This is for testing
+- tr 'a-z' 'sdlfknsdlfknsdf' <<< "hello world"
+- /sbin/ifconfig eth0 | grep 'inet addr' | cut -d: -f2 | awk '{print $1}' // ip주소 출력
+- rm -rf !(파일명) : 원하는 파일 제외하고 지우기
+- 정규표현식(Regular expression)
   - 
 
-- 함수 사용법
+```
+#!/usr/bin/env bash
+/* 맨 앞에 스크립트 구문 적는 법
+    #!/bin/bash - 불안전
+    #!/usr/bin/env bash
+*/
+# 파일내의 라인수를 카운트 
+lines=0
+#for i in $(find . -type f); do 
+for i in *; do 
+rowline=$(wc -l "$i" | awk '{print $1}');
+file="$(wc -l "$i" | awk '{print $2}')"; 
+lines=$((lines + rowline)); 
+echo "Lines["$lines"] " "$file" "has "$rowline" rows.";
+done && unset lines
+```
+
+##  함수 사용법
 ```
 function subl(){ // function은 안써도 됨
 if [["$#" -ne 1]]; then
@@ -42,4 +92,5 @@ if [["$#" -ne 1]]; then
 fi
 }
 ```
+
 
