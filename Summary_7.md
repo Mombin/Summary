@@ -14,10 +14,10 @@
 5. sudo chwon -R mds:adm exercise_lsp
 
 >네트워크 구성도
-![네트워크](/picture/06241124.gif)
+![네트워크](./picture/06241124.gif)
 
 >파일 컴파일,링커 개요
-![컴파일](/picture/06241600.gif)
+![컴파일](./picture/06241600.gif)
 
 ### BSS를 DATA와 분리시키고 0으로 초기화하는 과정이 .o파일 이후에 되는 이유
 
