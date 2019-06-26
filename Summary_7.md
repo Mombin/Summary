@@ -98,3 +98,50 @@ LD_LIBRARY_PATH=`pwd`:$LD_LIBRARY_PATH ; export
   - 원본파일명이 바뀌면 사용하지 못함
 
 
+![](./picture/06251700.gif) 
+
+
+## System Call
+
+1. system call
+2. call <i>library</i> function
+3. 함수의 인자값 처리 및 EAX 레지스터에 시스템 콜 등록
+4. 0x80(intel) or SWI(arm)
+5. Processor가 커널 모드(arm에서는 SVC모드)로 전환
+6. 커널이 Interrupt에 대한 system call 루틴을 호출
+7. 현재 레지스터 값들을 스택에 저장
+8. 넘겨받은 인자값들 확인
+9. system call 루틴 실행
+10. 스택에 저장된 레지스터값들 복구
+11. Processor가 사용자 모드(이전 모드)로 전환
+12. system call 함수로부터 return
+
+- Systemcall은 User Level이 아니어도 부를 수 있다. Supervisor모드에서도 호출 가능
+- SWI(software interrupt) : User Level에서 Kernel Level로 이동하게(switching mode) 하는 instruction
+
+>리눅스 파일 권한
+![](picture/linux_ls.png)
+
+-rwx-|-xr-|-x-  
+--|---|---
+User|Group|Other
+
+- r: read
+- w: write
+- x: execute
+
+### File open
+```c
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcnt1.h>
+/*open fopen 차이*/
+int fd = open(const char *pathname, int flags); // low Level F/O function, type1
+int fd = open((const char *pathname, int flags, mode_t mode);// low Level F/O function, type2
+FILE *pf = fopen(const char *pathname, int flags, mode_t mode);// high Level F/O function
+//flag : O_RDONLY, O_WORLD, O_RDWD, O_CREAT, O_EXCL...
+```
+
+### Data & Meta Data
+- Data: 파일의 내용
+- Meta Data: 파일의 정보
