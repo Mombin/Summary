@@ -220,3 +220,4 @@ int pthread_join (pthread_t thread, void *value_ptr);
 - `여러개의 스레드가 한 스레드를 종료시킬 수는 없다.`
 - pthread_exit() 으로 종료되면 리턴값을 인자로 받아 리턴한다.
 
+![0627 그림 요약](./picture/06271700.GIF)
