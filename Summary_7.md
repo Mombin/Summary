@@ -145,3 +145,78 @@ FILE *pf = fopen(const char *pathname, int flags, mode_t mode);// high Level F/O
 ### Data & Meta Data
 - Data: 파일의 내용
 - Meta Data: 파일의 정보
+
+## Process
+>Process : 프로그램이 실행되어 돌아가고 있는 상태
+
+>Process State  
+![](./picture/process_state.jpg)
+
+<b>프로세스 관련 쉘 명령</b>  
+- top : 프로세스 증 제일 cpu가 많이 쓰이는 프로세스
+- ps -(e,f,l,L) : 현재 프로세스를 보여줌
+- pstree : 프로세스를 트리 형태로 보여줌
+- fg/bg: fore ground/ back ground
+
+- execl : 현재 실행되고 있는 프로세스를 덮어 씌워서 실행하는 함수
+
+### fork()  
+- 부모와 같은 자식을 낳는 프로세스 
+- fork() process는 부모와 자식이 같은 file table, text를 공유해서 사용한다.
+- 오직 자식의 pid만 0, 부모는 0>pid
+
+## Scheduler
+- CFS(Completely Fairness Scheduler)
+- RT(Real Time)
+- Deadline
+  
+>우선순위  
+![](picture/priority.png)
+CFS에서는 NI값을 이용해 우선순위를 동적으로 바꿀 수 있다.  
+- 숫자가 낮을수록 우선순위가 높다.
+- realtime priority에서는 숫자가 높을수록 우선순위가 높다.
+- -40의 priority는 RT schedule을 따름
+- ps -l : PRI(-40~99)는 cfs를 따름
+- top : PR(-20~30)는 cfs를 따름
+- ps -l의 80 == top의 20
+
+### Realtime에서 우선순위가 같을 때 우선순위 결정 방법
+- SCHED_FIFO: 먼저 온 프로세스가 무조건 우선
+- SCHED_RR: 적당하게 번갈아가며 우선순위 책정  
+  
+## Thread
+>리눅스의 쓰레드는 `가벼운 프로세스(Light Weight Process) `이다.
+
+- 쓰레드간에는 프로세스끼리와는 달리 Cache의 내용을 공유할 수 있다.
+
+[Thread 참고자료](https://reakwon.tistory.com/56)
+
+## Difference Process & Thread
+>Process
+![](picture/process.png)  
+각 프로세스간 독립적으로 작동한다.
+
+>Thread
+![](picture/thread.png)
+Code, Data, Heap을 공유하기 때문에 서로 의존적이다.
+
+### 쓰레드의 생성
+```c
+int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void*(*start_routine)(void*), void *arg);
+/*
+- *thread : id of thread
+- attr : attribute thread, NULL if default
+- start_routine : 쓰레스 수행을 시작할 위치, 쓰레드 함수 이름
+- arg: 생성될 스레드에 전달될 인자들(없으면 NULL)
+*/
+```
+- 쓰레드의 Schedule은 부모의 Schedule policy를 그대로 따른다.  
+
+### pthread_join()   
+```c
+int pthread_join (pthread_t thread, void *value_ptr);
+```
+- 지정된 id의 스레드가 종료할 때까지 이 함수를 호출한 스레드를 정지(suspend)시킨다.
+- `여러개의 스레드가 한 스레드를 종료시킬 수는 없다.`
+- pthread_exit() 으로 종료되면 리턴값을 인자로 받아 리턴한다.
+
