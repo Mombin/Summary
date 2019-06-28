@@ -221,3 +221,134 @@ int pthread_join (pthread_t thread, void *value_ptr);
 - pthread_exit() 으로 종료되면 리턴값을 인자로 받아 리턴한다.
 
 ![0627 그림 요약](./picture/06271700.GIF)
+
+- exit()은 process나 thread에서 실행되면 process를 죽이는 함수이다.
+- pthread_exit()은 thread만 죽일 수 있는 함수.
+
+- process(system) resource : 파일, RAM에 잡힌 자원 등..
+- thread specific resource : 스레드에 있는 FDT(file description table), .stack 등의 자원은 thread가 죽으면 pthread_join()이 해제한다.
+
+- thread가 attached state일 때에는 pthrad_join()에 의존하나 detached state일 때에는 자체적으로 해제한다.
+
+### 세마포어(Semaphore)
+
+
+- 세마포어 값에 따라 공유된 자원의 접근을 제한하는 기술
+- 0,1,2 등으로 사용하나 그 이상의 세마포어 값도 가능하다.
+- 세마포어 사용시 Deadlock발생에 주의한다.
+  - Deadlock:서로가 상대의 자원을 원하는 경우
+  
+### MUTEX(`Mut`ually `Ex`clusive Semaphore)
+
+- Critical Section을 가진 쓰레드들의 Runnig Time이 서로 겹치지 않게 각각 단독으로 실행되게 하는 기술
+- 키 값이 1일 세마포어와 비슷함
+- Task 삭제 보호 : (뮤텍스가 unlock되지 않고)삭제된 뮤텍스를 사용할 수 있게 하는 기능
+
+### MUTEX vs Semaphore
+1) Semaphore는 Mutex가 될 수 있지만 Mutex는 Semaphore가 될 수 없습니다.
+(Mutex 는 상태가 0, 1 두 개 뿐인 binary Semaphore)
+
+2) Semaphore는 소유할 수 없는 반면, Mutex는 소유가 가능하며 소유주가 이에 대한 책임을 집니다. (Mutex 의 경우 상태가 두개 뿐인 lock 이므로 lock 을 ‘가질’ 수 있습니다.)
+
+3) Mutex의 경우 Mutex를 소유하고 있는 쓰레드가 이 Mutex를 해제할 수 있습니다. 하지만 Semaphore의 경우 이러한 Semaphore를 소유하지 않는 쓰레드가 Semaphore를 해제할 수 있습니다.
+
+4) Semaphore는 시스템 범위에 걸쳐있고 파일시스템상의 파일 형태로 존재합니다. 반면 Mutex는 프로세스 범위를 가지며 프로세스가 종료될 때 자동으로 Clean up된다.
+
+>우선순위 역전현상
+![](./picture/priority_inversion.png)
+
+1. task3이 공유자원을 액세스 위해 binary semaphore를 가지고 수행
+2. Scheduler에 의해 task1이 수행
+3. task1은 task3가 먼저 획득한 Semaphore를 얻으려(take)하고, task3가 그 Semaphore를 반환할 때(give)까지 Waiting 상태로 됨
+4. Scheduler에 의해 task3 수행
+5. Scheduler에 의해 task2가 수행
+이 시점에서 task1의 priority가 task2보다 높음에도 불구하고 task2가 먼저 수행 되는 Priority Inversion 문제가 발생
+6. task2의 수행이 종료 되면, task3가 재 수행
+7. task3가 Semaphore 반환
+8. task1 수행
+
+## 우선순위 역전현상 해결 방법
+
+### Priority Inheritance 처리 방법
+
+>Priority Inheritance method
+![](./picture/Priority_Inheritance.png)
+
+1. task3이 공유자원을 액세스 위해 binary semaphore를 가지고 수행
+2. Scheduler에 의해 task1이 수행
+3. task1은 task3가 먼저 획득한 Semaphore를 얻으려(take)하고, task3가 그 Semaphore를 반환할 때(give), Waiting 상태로 됨
+4. Scheduler에 의해 task3 수행되는데, task3의 priority를 task1이 waiting 상태인 동안, task1의 레벨로 높임(Priority Inheritance)으로써 task3의 priority가 task2보다 높기 때문에 preemption 없이 수행 
+5. Task3이 Semaphore를 반환
+6. Task1이 Semaphore를 얻어서 수행됨과 동시에, task3의 priority가 다시 예전의 값으로 복귀
+7. Task1 수행
+8. Task2 수행
+
+
+
+### Priority Ceiling 처리 방법
+
+>Priority Ceiling method
+![](./picture/priority_ceiling.png)
+
+- 어떤 쓰레드가 priority ceiling 속성을 가지는 뮤텍스를 Lock설정 하면, 쓰레드의 우선순위는 뮤텍스의 우선순위 올림 값으로 자동으로 상승
+- 단, 쓰레드의 우선순위가 뮤텍스의 우선순위 올림 값보다 작은 경우에만 우선순위 변경됨
+- 올림 값 보다 더 높은 우선순위 가지는 쓰레드가 잠글 경우 규칙 깨짐 
+- 따라서 뮤텍스를 이미 잠근 쓰레드는 뮤텍스를 잠그려고 시도하는 다른 쓰레드 들에 의해 선점되지 않고 자신의 작업을 종료 가능
+
+## IPC(Inter Process Communication)
+
+- 프로세스 간의 통신 정의
+
+### POSIX MESSAGE QUEUE
+
+>Posix Message Queue
+![](./picture/msg-queue.png)
+
+### SysV MESSAGE QUEUE
+>SysV Message QUEUE
+![](./picture/sysv_msgqueue.jpg)
+
+
+### SHARED MEMORY
+- 각 프로세스가 하나의 커널 메모리를 공유하는 기술
+- 임의의 프로세스가 공유 메모리 데이터를 쓰면 다른 프로세스가 메모리의 내용을 읽어 각 프로세스간에 통신이 이루어진다.
+>Shared Memory
+![](./picture/shared_memory.png)
+
+### SIGNAL
+
+```bash
+$ kill -9 1234 // $[command] -sigNo PID
+```
+ Signal Name|Number|Description
+---|---|----
+ SIGHUP|1|Hangup (POSIX)
+ SIGINT|2|Terminal interrupt (ANSI)
+ SIGQUI|3|Terminal quit (POSIX)
+ SIGILL|4|Illegal instruction (ANSI)
+ SIGTRAP|5|Trace trap (POSIX)
+ SIGIOT|6|IOT Trap (4.2 BSD)
+ SIGBUS|7|BUS error (4.2 BSD)
+ SIGFPE|8|Floating point exception (ANSI)
+ SIGKILL|9|Kill(can't be caught or ignored) (POSIX)
+ SIGUSR1|10|User defined signal 1 (POSIX)
+ SIGSEGV|11|Invalid memory segment access (ANSI)
+ SIGUSR2|12|User defined signal 2 (POSIX)
+ SIGPIP|13|Write on a pipe with no reader, Broken pipe (POSIX)
+ SIGALRM|14|Alarm clock (POSIX)
+ SIGTERM|15| Termination (ANSI)
+ SIGSTKFLT|16|Stack fault
+ SIGCHLD|17|Child process has stopped or exited, changed (POSIX)
+ SIGCONT|18|Continue executing, if stopped (POSIX)
+ SIGSTOP|19|Stop executing(can't be caught or ignored) (POSIX)
+ SIGTSTP|20|Terminal stop signal (POSIX)
+ SIGTTIN|21|Background process trying to read, from TTY (POSIX)
+ SIGTTOU|22|Background process trying to write, to TTY (POSIX)
+ SIGURG|23|Urgent condition on socket (4.2 BSD)
+ SIGXCPU|24|CPU limit exceeded (4.2 BSD)
+ SIGXFSZ|25|File size limit exceeded (4.2 BSD)
+ SIGVTALRM|26| Virtual alarm clock (4.2 BSD)
+ SIGPROF|27| Profiling alarm clock (4.2 BSD)
+ SIGWINCH|28| Window size change (4.3 BSD, Sun)
+ SIGIO|29| I/O now possible (4.2 BSD)
+ SIGPWR|30| Power failure restart (System V)
