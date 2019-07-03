@@ -91,10 +91,13 @@ MISRA-C 룰
 - DAPEnable ON
 - DEBUGPORTTYPE DAP2
 
+>LD 화면 기능 설명
 ![](./picture/t32_ld.png)
 
+>System setting법  
 ![](./picture/t32_setting.png)
 
+>Config setting
 ![](./picture/t32_config.png)
 
 
@@ -111,3 +114,39 @@ MISRA-C 룰
 - FCX : Linked List node 의 Head pointer
 - LCS : Linked List node 의 Tail pointer
 - CSFRs(Core Special Function Registers): Supervisor 모드로의 접근 하기위한 방법, High Level에서는 접근 불가. Low Level에서만 접근 가능함(특별한 방법으로)
+- MTCR, MFCR
+- A15, D15 : Implicit Data
+- Implicit data is information that is not provided intentionally(의도적으로) but gathered from available data streams, either directly or through analysis of explicit data.
+- Explicit data is information that is provided intentionally, for example through surveys and membership registration forms.
+
+### Upper Context
+The upper context is automatically saved on `call, interrupt or trap.`
+
+### Lower Context
+The lower context has to be saved explicitly with an instruction.
+
+- CSA(Context Save Area) : Context를 저장하는 별도의 공간.
+- 명령어가 실제로는 0-7번 메모리를 접근하지만 C, D에 접근하는 것처럼 보이게 해서 코어간에 간섭이 없게 한다.
+
+- MPP(Memory Protection Peripheral Access) : (TIN 5)
+A program executing in User-0 mode attempted a load or store access to a segment is
+configured to be a peripheral segment.
+
+- PRIV(Privilege Violation) : A program executing in one of the User modes (User-0 or User-1 mode) attempted to
+execute an instruction not allowed by that mode.
+A table of instructions which are restricted to Supervisor mode or User-1 mode, is
+supplied in the Instruction Set chapter of Volume 2 of this manual.
+
+### Peripheral Space
+- Only `Supervisor` and `User-1` mode data accesses are permitted.
+- User-0 mode data accesses are not permitted and result in an MPP trap.
+- Code accesses are not permitted and will result in a PSE trap
+- All CPU accesses to the memory segment are non-cached.
+- All CPU accesses to the memory segment are non-speculative.
+- Context operations and accesses using circular addressing are not permitted.
+
+
+>floating point는 동등 비교 연산을 하면 안된다.
+ex) if(float==6.625)  금지
+
+다른 자료형은 signed가 default값이지만 char는 옵션을 따라서 unsigned와 signed가 정해진다.
