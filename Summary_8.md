@@ -150,3 +150,66 @@ supplied in the Instruction Set chapter of Volume 2 of this manual.
 ex) if(float==6.625)  금지
 
 다른 자료형은 signed가 default값이지만 char는 옵션을 따라서 unsigned와 signed가 정해진다.
+
+### BTV
+The BTV register specifies the Base address of the Trap Vector table.  
+BTV는 Trap register Table의 시작 주소
+
+error값 찾는 법
+1. PC의 위치가 어디인지 찾는다.
+2. PC의 위치가 Trap Table의 어느 위치에 있는지 찾기 위해 PC의 주소와 BTV의 주소값의 차이를 구한다.
+3. 차이만큼의 위치가 Error class의 위치이다.
+
+
+
+```c
+char *( *(*var)() )[10];
+ ^   ^  ^ ^ ^   ^    ^
+ 7   6  4 2 1   3    5
+```
+1. The identifier var is declared as
+2. a pointer to
+3. a function returning
+4. a pointer to
+5. an array of 10 elements, which are
+6. pointers to
+7. char values.
+
+
+
+### integral promotion  
+char + int => int + int  
+char + short => **`int`** + **`int`**  
+int + float => double + double(컴파일러마다 상이)  
+float + double => double + double  
+
+![](./picture/pointer.png)
+
+
+```asm
+movlt.a a0, #0xFF
+  ^      ^    ^
+operator operand
+```
+
+BASEOF1.OP2  
+ex)ADDS.B
+
+```
+D : destination
+S1 : source1
+S2 : source2
+
+ADD D0, D1, D2
+     ^  ^   ^
+     D  S1  S2
+
+
+ADD D0, D1
+    ^   ^
+  D/S1  S2
+
+MOV D0, D1
+    ^   ^
+    D   S
+```
