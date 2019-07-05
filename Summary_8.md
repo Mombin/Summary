@@ -155,6 +155,8 @@ ex) if(float==6.625)  금지
 The BTV register specifies the Base address of the Trap Vector table.  
 BTV는 Trap register Table의 시작 주소
 
+
+![](./picture/context.png)
 error값 찾는 법
 1. PC의 위치가 어디인지 찾는다.
 2. PC의 위치가 Trap Table의 어느 위치에 있는지 찾기 위해 PC의 주소와 BTV의 주소값의 차이를 구한다.
@@ -187,7 +189,7 @@ float + double => double + double
 
 
 ```asm
-movlt.a a0, #0xFF
+mov16.a a0, #0xFF
   ^      ^    ^
 operator operand
 ```
@@ -213,3 +215,33 @@ MOV D0, D1
     ^   ^
     D   S
 ```
+
+### I/O 제어 방법
+- int *p = 0xFF1111111;과 같은 변수로 접근하지 않는 이유:
+  pointer메모리를 추가로 더 할당해야 하기때문에 비효율적임
+- 그래서 상수->변수로 케스팅 하여 사용함(`*변수 사용`)
+
+```c
+*(volatile unsigned int*)0xF0000000 = 10;
+*(volatile struct ID*)0xF0000000 = 10;
+
+typedef volatile struct _IFx_P
+{
+  ...
+}Ifx_P;
+
+#define MODULE_P00 /*lint --e(923)*/ (*(Ifx_P*)0xF003A000u)
+
+```
+
+Data Type Modifier|Name|Description|Example
+---|---|---|---
+D|Data|32-bit data |MOV.D
+D|Double-word|64-bit data/address |LD.D
+W|Word|32-bit (word) data |EQ.W
+A|Address|32-bit address |ADD.A
+Q|Q Format|16-bit signed fraction (Q format) |MADD.Q
+H|Half-word|16-bit data or two packed half-words |ADD.H
+B|Byte|8-bit data or four packed bytes |ADD.B
+T|Bit|1-bit data |AND.T
+U|Unsigned|Unsigned data type|ADDS.U
