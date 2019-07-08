@@ -67,6 +67,7 @@
 - export : 특정 변수의 값을 상속시켜서 다른 프로세스에서도 사용할 수 있게 함.
 - xargs : 쉘 고수 되려면 공부해야함
 - sleepN : N초만큼 sleep
+- source /etc/environment :environment를 다시한번 실행해줌.
 
 ```
 #!/usr/bin/env bash
